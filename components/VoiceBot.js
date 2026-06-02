@@ -132,7 +132,7 @@ export default function VoiceBot() {
       });
 
       if (!chatResponse.ok) throw new Error('Chat generation failed');
-      const { reply } = await chatResponse.json();
+      const { reply, voice } = await chatResponse.json();
       setResponse(reply);
 
       // Update conversation history
@@ -148,7 +148,7 @@ export default function VoiceBot() {
       const ttsResponse = await fetch('/api/text-to-speech', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: reply }),
+        body: JSON.stringify({ text: reply, voice }),
       });
 
       if (!ttsResponse.ok) throw new Error('Text-to-speech failed');

@@ -14,7 +14,7 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 export async function POST(request) {
   try {
     // 1. Get the text to convert to speech
-    const { text } = await request.json();
+    const { text, voice } = await request.json();
 
     if (!text) {
       return NextResponse.json(
@@ -28,7 +28,7 @@ export async function POST(request) {
     //    Models: tts-1 (fast), tts-1-hd (high quality)
     const speechResponse = await openai.audio.speech.create({
       model: 'tts-1',
-      voice: process.env.TTS_VOICE || 'nova',
+      voice: voice || process.env.TTS_VOICE || 'nova',
       input: text,
       speed: 1.0, // 0.25 to 4.0
     });

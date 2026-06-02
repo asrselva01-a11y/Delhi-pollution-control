@@ -9,6 +9,19 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
+const VOICE_BY_CHARACTER = {
+  trump: 'onyx',   // deep male voice
+  alia:  'nova',   // female voice
+  venus: 'echo',   // lighter/younger male voice
+};
+function detectCharacter(reply) {
+  const lower = reply.trim().toLowerCase();
+  if (lower.startsWith('trump')) return 'trump';
+  if (lower.startsWith('alia'))  return 'alia';
+  if (lower.startsWith('venus')) return 'venus';
+  return null;
+}
+
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 // ── CHARACTER SYSTEM PROMPT ──
@@ -68,12 +81,15 @@ export async function POST(request) {
       max_tokens: 200, // Keep responses short for voice
     });
 
-    const reply = completion.choices[0].message.content;
+   
 
     // 4. Return the AI's response
-    return NextResponse.json({
-      reply: reply,
-    });
+    const reply = completion.choices[0].message.content;
+
+const character = detectCharacter(reply);
+const voice = VOICE_BY_CHARACTER[character] ?? 'alloy'; // fallback
+
+return NextResponse.json({ reply, character, voice });
   } catch (error) {
     console.error('Chat error:', error);
     return NextResponse.json(
